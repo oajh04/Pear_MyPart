@@ -4,12 +4,15 @@ import * as S from '../styled/NoticeStyled/NoticeContentStyle';
 import Leave from '../../assets/ArrowImg/Leave.png';
 import link from '../../assets/link.svg';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { request, fileRequest, FileURL } from '../../utils/axios/axios'
 
 
 const NoticeContent = (props) => {
+
     const { params } = props.match;
-    const pvalue = params.data;
+    const ContentId = params.data;
+
+    console.log(ContentId)
 
     const [ contentData, setContentData ] = useState(null);
     const [ fileData , setFileData] = useState(null);
@@ -17,50 +20,58 @@ const NoticeContent = (props) => {
     const [ error, setError ] = useState(null);
     const [ loading, setLoading ] = useState(null);
 
-    
-
     useEffect(() => {
         const DataApi = async () => {
-          try {
-            // 요청이 시작 할 때에는 error 와 users 를 초기화하고
-            setError(null);
-            setContentData(null);
-            // loading 상태를 true 로 바꿉니다.
-            setLoading(true);
-            const response = await axios.get(
-              //`http://smoothbear.eastus.cloudapp.azure.com:8000/notice/${pvalue}`
-              `https://jsonplaceholder.typicode.com/users`
-            );
-            setContentData(response.data);
-            
-          } catch (e) {
-            setError(e);
-          }
-          setLoading(false);
+            try {
+                // 요청이 시작 할 때에는 error 와 users 를 초기화하고
+                setError(null);
+                setContentData(null);
+                // loading 상태를 true 로 바꿉니다.
+                setLoading(true);
+                const response = await request(
+                "get",
+                `/notice/${ContentId}`,
+                {},
+                "", 
+                );
+                console.log(response)
+                setContentData(response.data);
+                
+            } catch (e) {
+                setError(e);
+            }
+            setLoading(false);
         };
 
         const FileApi = async () => {
             try{
-                const response = await axios.get(
-                    `http://3.15.177.120:3000/notice/files/1`
+                const response = await fileRequest(
+                    "get",
+                    `/notice/files/${ContentId}`,
+                    {},
+                    "",
                 );
                 setFileData(response.data);
+                console.log(response.data)
             }catch(e){
-                setError(e);
+                console.log(e)
             }
         }
     
         DataApi();
         FileApi()
-      }, []);
+      }, [ContentId]);
 
       const FileDownload = () => {
-        window.open(`http://3.15.177.120:3000/notice/1`);
+        window.open(FileURL + `/notice/${fileData[0].id}`);
       }
 
       if (loading) return <div>로딩중..</div>;
-      if (error) return <div>에러가 발생했습니다</div>;
-      if (!contentData) return null;
+      if (error) return <div>{error}</div>;
+      if (!contentData) return <div>보고서가 없습니다!</div>;
+
+      const createTime = contentData.createdAt.split(" ")
+
     return(
         <>
                 <S.Background>
@@ -69,17 +80,17 @@ const NoticeContent = (props) => {
                     <S.NoticeContant key={contentData.id}>
                         <S.NoticeHeader>
                             <S.NoLeave>
-                                <Link to={'/notice'}>
+                                <Link to={'/notice?page=1'}>
                                     <img src={Leave} alt="사진"/>
                                 </Link>
                             </S.NoLeave>
 
                             <S.NoTitle>
-                                {contentData.createdAt}
+                                {contentData.title}
                             </S.NoTitle>
 
                             <S.NoDay>
-                                {contentData.username}
+                                {createTime[0]}
                             </S.NoDay>
                         </S.NoticeHeader>
 
@@ -87,13 +98,14 @@ const NoticeContent = (props) => {
                             {contentData.description}
                         </S.NoticeContain>
 
+
                         <S.NoticeFile>
                             <S.FileLink>
-                            <img src={link} alt="사진"/>
+                            <img onClick={FileDownload} src={link} alt="사진"/>
                             </S.FileLink>
                             <S.FileTitle>
                                 <div onClick={FileDownload}>
-                                    파일이름
+                                    {contentData.fileName}
                                 </div>
                             </S.FileTitle>
                         </S.NoticeFile>
