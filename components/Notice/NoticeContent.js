@@ -62,11 +62,12 @@ const NoticeContent = (props) => {
         FileApi()
       }, [ContentId]);
 
+      console.log(contentData)
+
       const FileDownload = () => {
-        window.open(FileURL + `/notice/${fileData[0].id}`);
+        window.open(FileURL + `/notice/${fileData.id}`);
       }
 
-      if (loading) return <div>로딩중..</div>;
       if (error) return <div>{error}</div>;
       if (!contentData) return <div>보고서가 없습니다!</div>;
 
@@ -78,6 +79,10 @@ const NoticeContent = (props) => {
                     <Header/>
 
                     <S.NoticeContant key={contentData.id}>
+
+                        {
+                            loading && <div>Loading...</div>
+                        }
                         <S.NoticeHeader>
                             <S.NoLeave>
                                 <Link to={'/notice?page=1'}>
@@ -99,16 +104,22 @@ const NoticeContent = (props) => {
                         </S.NoticeContain>
 
 
-                        <S.NoticeFile>
-                            <S.FileLink>
-                            <img onClick={FileDownload} src={link} alt="사진"/>
-                            </S.FileLink>
-                            <S.FileTitle>
-                                <div onClick={FileDownload}>
-                                    {contentData.fileName}
-                                </div>
-                            </S.FileTitle>
-                        </S.NoticeFile>
+                        {
+                            
+                            contentData.fileName &&
+                            <S.NoticeFile>
+                                <S.FileLink>
+                                <img onClick={FileDownload} src={link} alt="사진"/>
+                                </S.FileLink>
+                                <S.FileTitle>
+                                    <div onClick={FileDownload}>
+                                        {contentData.fileName}
+                                    </div>
+                                </S.FileTitle>
+                            </S.NoticeFile>
+
+                        }
+                        
 
                     </S.NoticeContant>
                 </S.Background>
