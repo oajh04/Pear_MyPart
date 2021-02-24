@@ -5,7 +5,7 @@ import * as S from '../styled/MainStyled/HeaderStyle'
 import DownArrow from '../../assets/ArrowImg/DownArrow.png';
 import UpArrow from '../../assets/ArrowImg/UpArrow.png';
 import SearchImg from '../../assets/searchImg.png';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 const Header = (props) => {
     const [ searchtype, setSearchtype ] = useState("보고서");
@@ -16,6 +16,8 @@ const Header = (props) => {
     const [ img, setImg ] = useState(DownArrow);
     const [ value, setValue ] = useState("report");
     const [ keyword, setKeyword ] = useState("");
+
+    const history = useHistory();
 
     const isAccessToken = localStorage.getItem('access-token');
     const isRefrechToken = localStorage.getItem('refresh-token');
@@ -61,8 +63,7 @@ const Header = (props) => {
     }
     const onSubmit = (e) => {
         e.preventDefault();
-        //props.history.replace(`/search-result?mode=${value}&keyword=${keyword}&page=1`);
-        window.location.href=`/search-result?mode=${value}&keyword=${keyword}&page=1`
+        history.push(`/search-result?mode=${value}&keyword=${keyword}&page=1`);
     }
 
     const LogOut = () => {
