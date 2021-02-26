@@ -1,17 +1,23 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import * as S from '../styled/SearchResult/SearchResultStyle';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 const SearchResultLanguage = (props) => {
     const LanguageData = props.data;
+
+    const history = useHistory()
+
+    const onLink = () => {
+        history.push(`/view-report/main-report`)
+    }
 
     const SearchLanguage = useCallback(
         (dataList) => {
             return dataList.map((data)=>{
                 const color = data.bdc === "팀" ? "#6192f3" : data.bdc === "개인" ? "#27d5b1" : "#5955d8";
                 return(
-                    <Link to={`/view-report/main-report`} key={data.id}>
+                    <div key={data.id}>
                         <S.Container bordercolor={color} >
                             <S.ContainerContant>
                                 <S.ContainerBDC fontcolor={color}>
@@ -25,7 +31,7 @@ const SearchResultLanguage = (props) => {
                                 </S.ContainerDay>
                             </S.ContainerContant>
                         </S.Container>
-                    </Link>
+                    </div>
                 )
             })
         }
